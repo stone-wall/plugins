@@ -124,8 +124,8 @@ public class MenuEntrySwapperPlugin extends Plugin
 	private static final List<String> dropFish = Arrays.asList(
 		"Raw shrimp", "Raw Sardine", "Raw karambwanji", "Raw herring", "Raw anchovies", "Raw mackerel",
 		"Raw trout", "Raw cod", "Raw pike", "Raw slimy eel", "Raw salmon", "Raw tuna", "Raw rainbow fish",
-		"Raw cave eellobster", "Raw bluegill", "Raw bass", "Raw leaping trout", "Raw swordfish", "Raw lava eel",
-		"Raw common tench", "Raw leaping salmon", "Raw monkfish", "Raw karambwan", "Raw leaping sturgeon",
+		"Raw cave eellobster", "Raw bluegill", "Raw bass", "Leaping trout", "Raw swordfish", "Raw lava eel",
+		"Raw common tench", "Leaping salmon", "Raw monkfish", "Raw karambwan", "Leaping sturgeon",
 		"Raw mottled eel", "Raw shark", "Raw sea turtle", "Raw infernal eel", "Raw manta ray", "Raw angler fish",
 		"Raw dark crab", "Raw sacred eel"
 	);
@@ -134,7 +134,6 @@ public class MenuEntrySwapperPlugin extends Plugin
 		"Silver ore", "Coal", "Sandstone", "Gold ore", "Granite", "Mithril ore", "Lovakite ore",
 		"Adamantite ore", "Runite ore", "Amethyst ore"
 	);
-
 	private static final List<String> dropLogs = Arrays.asList(
 		"Logs", "Achey tree logs", "Oak logs", "Willow logs", "Teak logs", "Juniper logs", "Maple logs",
 		"Mahogany logs", "Artic pine logs", "Yew logs", "Magic logs", "Redwood logs"
@@ -375,7 +374,7 @@ public class MenuEntrySwapperPlugin extends Plugin
 				{
 					continue;
 				}
-				if (config.hideDestroyGembag() && entry.getTarget().contains("Gem bag"))
+				if (config.hideDestroyGembag() && (entry.getTarget().contains("Gem bag") || entry.getTarget().contains("open gem bag")))
 				{
 					continue;
 				}
@@ -1396,17 +1395,41 @@ public class MenuEntrySwapperPlugin extends Plugin
 
 	private void removeHotkey(ClientTick event)
 	{
-		menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
-		menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
-		menuManager.removePriorityEntry("climb-up");
-
-		for (String npccontact : npcContact)
+		if (config.bankWieldItem())
 		{
-			menuManager.removePriorityEntry(npccontact, "npc contact");
+		menuManager.removePriorityEntry(new BankComparableEntry("wield", "", false));
+		}
+		if (config.bankWearItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("wear", "", false));
+		}
+		if (config.bankEatItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("eat", "", false));
+		}
+		if (config.bankDrinkItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("drink", "", false));
+		}
+		if (config.bankEquipItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("equip", "", false));
+		}
+		if (config.bankInvigorateItem())
+		{
+		menuManager.removePriorityEntry(new BankComparableEntry("invigorate", "", false));
+		}
+		if (config.swapClimbUpDown())
+		{
+		menuManager.removePriorityEntry("climb-up");
+		}
+
+		if (config.swapNpcContact())
+		{
+			for (String npccontact : npcContact)
+			{
+				menuManager.removePriorityEntry(npccontact, "npc contact");
+			}
 		}
 
 		loadCustomSwaps("", customShiftSwaps);
