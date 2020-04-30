@@ -27,9 +27,7 @@
 package net.runelite.client.plugins.bank;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
@@ -50,8 +48,6 @@ import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.ScriptID;
-import net.runelite.api.SpriteID;
-import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
@@ -59,9 +55,8 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuShouldLeftClick;
 import net.runelite.api.events.ScriptCallbackEvent;
-import net.runelite.api.events.VarClientStrChanged;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -74,8 +69,8 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.plugins.banktags.tabs.BankSearch;
 import net.runelite.client.util.QuantityFormatter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.pf4j.Extension;
 
 @Extension
@@ -87,7 +82,7 @@ import org.pf4j.Extension;
 )
 public class BankPlugin extends Plugin implements KeyListener
 {
-	private static final List<Varbits> TAB_VARBITS = ImmutableList.of(
+	private static final List<Varbits> TAB_VARBITS = List.of(
 		Varbits.BANK_TAB_ONE_COUNT,
 		Varbits.BANK_TAB_TWO_COUNT,
 		Varbits.BANK_TAB_THREE_COUNT,
@@ -99,7 +94,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		Varbits.BANK_TAB_NINE_COUNT
 	);
 
-	private static final List<WidgetInfo> BANK_PINS = ImmutableList.of(
+	private static final List<WidgetInfo> BANK_PINS = List.of(
 		WidgetInfo.BANK_PIN_1,
 		WidgetInfo.BANK_PIN_2,
 		WidgetInfo.BANK_PIN_3,
@@ -142,6 +137,9 @@ public class BankPlugin extends Plugin implements KeyListener
 	private BankConfig config;
 
 	@Inject
+	private BankSearch bankSearch;
+
+	@Inject
 	private ContainerCalculation bankCalculation;
 
 	@Inject
@@ -167,18 +165,18 @@ public class BankPlugin extends Plugin implements KeyListener
 		{
 			keyManager.registerKeyListener(this);
 		}
-		searchString = "";
 	}
 
 	@Override
 	protected void shutDown()
 	{
 		keyManager.unregisterKeyListener(this);
-		clientThread.invokeLater(() -> client.runScript(ScriptID.MESSAGE_LAYER_CLOSE, 0, 0));
+		clientThread.invokeLater(() -> bankSearch.reset(false));
 		forceRightClickFlag = false;
 		itemQuantities = null;
+		searchString = null;
 	}
-	
+
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
@@ -203,7 +201,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		MenuEntry[] menuEntries = client.getMenuEntries();
 		for (MenuEntry entry : menuEntries)
 		{
-			if ( (entry.getOption().equals(DEPOSIT_WORN) && config.rightClickBankEquip())
+			if ((entry.getOption().equals(DEPOSIT_WORN) && config.rightClickBankEquip())
 				|| (entry.getOption().equals(DEPOSIT_INVENTORY) && config.rightClickBankInventory())
 				|| (entry.getOption().equals(DEPOSIT_LOOT) && config.rightClickBankLoot())
 				|| (entry.getOption().equals(DISABLE) && config.rightClickSetPlaceholders())
@@ -291,34 +289,20 @@ public class BankPlugin extends Plugin implements KeyListener
 	}
 
 	@Subscribe
-	public void onVarClientStrChanged(VarClientStrChanged event)
+	public void onScriptPostFired(ScriptPostFired event)
 	{
-		String searchVar = client.getVar(VarClientStr.INPUT_TEXT);
-
-		if (!searchVar.equals(searchString))
+		if (event.getScriptId() != ScriptID.BANKMAIN_SEARCH_REFRESH)
 		{
-			Widget searchButtonBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
-			if (searchButtonBackground != null && searchButtonBackground.hasListener())
-			{
-				searchButtonBackground.setOnTimerListener((Object[]) null);
-				searchButtonBackground.setHasListener(false);
-			}
-			Widget bankContainer = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
-			if (bankContainer != null)
-			{
-				clientThread.invokeLater(() -> client.runScript(bankContainer.getOnInvTransmit()));
-			}
-			searchString = searchVar;
+			return;
 		}
 
-		if (client.getVar(VarClientInt.INPUT_TYPE) != InputType.SEARCH.getType()
-			&& Strings.isNullOrEmpty(client.getVar(VarClientStr.INPUT_TEXT)))
+		// vanilla only lays out the bank every 40 client ticks, so if the search input has changed,
+		// and the bank wasn't laid out this tick, lay it out early
+		final String inputText = client.getVar(VarClientStr.INPUT_TEXT);
+		if (searchString != inputText && client.getGameCycle() % 40 != 0)
 		{
-			Widget searchBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
-			if (searchBackground != null)
-			{
-				searchBackground.setSpriteId(SpriteID.EQUIPMENT_SLOT_TILE);
-			}
+			clientThread.invokeLater(bankSearch::layoutBank);
+			searchString = inputText;
 		}
 	}
 
@@ -592,12 +576,8 @@ public class BankPlugin extends Plugin implements KeyListener
 			{
 				return;
 			}
-			Object[] bankBuildArgs = new Object[] {ScriptID.BANKMAIN_SEARCH_TOGGLE, 1};
-			ArrayUtils.add(bankBuildArgs, bankContainer.getOnInvTransmit());
-			client.runScript(ScriptID.MESSAGE_LAYER_CLOSE, 0, 0);
-			client.runScript(bankBuildArgs);
 
-
+			bankSearch.initSearch();
 			e.consume();
 		}
 	}

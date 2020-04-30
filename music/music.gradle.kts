@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,22 +23,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Music"
 project.extra["PluginDescription"] = "Adds search and filter for the music list, and additional volume control"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-}
 
 tasks {
     jar {

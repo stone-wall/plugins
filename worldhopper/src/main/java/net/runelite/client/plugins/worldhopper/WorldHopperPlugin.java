@@ -27,11 +27,9 @@
 package net.runelite.client.plugins.worldhopper;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ObjectArrays;
 import com.google.inject.Provides;
 import java.awt.image.BufferedImage;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -102,14 +100,14 @@ public class WorldHopperPlugin extends Plugin
 {
 	private static final int WORLD_FETCH_TIMER = 10;
 	private static final int REFRESH_THROTTLE = 60_000; // ms
-	private static final int TICK_THROTTLE = (int) Duration.ofMinutes(10).toMillis();
+	private static final int MAX_PLAYER_COUNT = 1950;
 
 	private static final int DISPLAY_SWITCHER_MAX_ATTEMPTS = 3;
 
 	private static final String HOP_TO = "Hop-to";
 	private static final String KICK_OPTION = "Kick";
-	private static final ImmutableList<String> BEFORE_OPTIONS = ImmutableList.of("Add friend", "Remove friend", KICK_OPTION);
-	private static final ImmutableList<String> AFTER_OPTIONS = ImmutableList.of("Message");
+	private static final List<String> BEFORE_OPTIONS = List.of("Add friend", "Remove friend", KICK_OPTION);
+	private static final List<String> AFTER_OPTIONS = List.of("Message");
 
 	@Inject
 	private Client client;
@@ -556,6 +554,11 @@ public class WorldHopperPlugin extends Plugin
 			}
 
 			world = worlds.get(worldIdx);
+			
+			if (config.quickHopRegionFilter() != RegionFilterMode.NONE && world.getRegion() != config.quickHopRegionFilter().getRegion())
+			{
+				continue;
+			}
 
 			EnumSet<WorldType> types = world.getTypes().clone();
 
@@ -578,6 +581,12 @@ public class WorldHopperPlugin extends Plugin
 				{
 					log.warn("Failed to parse total level requirement for target world", ex);
 				}
+			}
+
+			// Avoid switching to near-max population worlds, as it will refuse to allow the hop if the world is full
+			if (world.getPlayers() >= MAX_PLAYER_COUNT)
+			{
+				continue;
 			}
 
 			// Break out if we've found a good world to hop to
@@ -610,6 +619,7 @@ public class WorldHopperPlugin extends Plugin
 	{
 		WorldResult worldResult = worldService.getWorlds();
 		// Don't try to hop if the world doesn't exist
+		@SuppressWarnings("ConstantConditions")
 		World world = worldResult.findWorld(worldId);
 		if (world == null)
 		{

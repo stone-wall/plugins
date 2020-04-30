@@ -52,6 +52,7 @@ import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginType;
+import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.MiscUtils;
 import org.pf4j.Extension;
 
@@ -66,6 +67,9 @@ import org.pf4j.Extension;
 public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 {
 	private static final int DEFAULT_ZOOM_INCREMENT = 25;
+	private static final int DEFAULT_OUTER_ZOOM_LIMIT = 128;
+	static final int DEFAULT_INNER_ZOOM_LIMIT = 896;
+
 	private static final String LOOK_NORTH = "Look North";
 	private static final String LOOK_SOUTH = "Look South";
 	private static final String LOOK_EAST = "Look East";
@@ -96,6 +100,12 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 	@Inject
 	private MouseManager mouseManager;
 
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private CameraOverlay cameraOverlay;
+
 	@Provides
 	CameraConfig getConfig(ConfigManager configManager)
 	{
@@ -108,19 +118,29 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 		rightClick = false;
 		middleClick = false;
 		menuHasEntries = false;
-
-		client.setCameraPitchRelaxerEnabled(config.relaxCameraPitch());
+		copyConfigs();
 		keyManager.registerKeyListener(this);
 		mouseManager.registerMouseListener(this);
+		overlayManager.add(cameraOverlay);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(cameraOverlay);
 		client.setCameraPitchRelaxerEnabled(false);
+		client.setInvertYaw(false);
+		client.setInvertPitch(false);
 		keyManager.unregisterKeyListener(this);
 		mouseManager.unregisterMouseListener(this);
 		controlDown = false;
+	}
+	
+	void copyConfigs()
+	{
+		client.setCameraPitchRelaxerEnabled(config.relaxCameraPitch());
+		client.setInvertYaw(config.invertYaw());
+		client.setInvertPitch(config.invertPitch());
 	}
 
 	@Subscribe
@@ -183,7 +203,7 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 		if ("outerZoomLimit".equals(event.getEventName()))
 		{
 			int outerLimit = MiscUtils.clamp(config.outerLimit(), CameraConfig.OUTER_LIMIT_MIN, CameraConfig.OUTER_LIMIT_MAX);
-			int outerZoomLimit = 128 - outerLimit;
+			int outerZoomLimit = DEFAULT_OUTER_ZOOM_LIMIT - outerLimit;
 			intStack[intStackSize - 1] = outerZoomLimit;
 			return;
 		}
@@ -237,7 +257,7 @@ public class CameraPlugin extends Plugin implements KeyListener, MouseListener
 			return;
 		}
 
-		client.setCameraPitchRelaxerEnabled(config.relaxCameraPitch());
+		copyConfigs();
 	}
 
 	@Override

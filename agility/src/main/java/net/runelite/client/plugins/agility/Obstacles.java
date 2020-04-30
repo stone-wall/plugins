@@ -24,9 +24,7 @@
  */
 package net.runelite.client.plugins.agility;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +34,7 @@ import net.runelite.client.game.AgilityShortcut;
 
 class Obstacles
 {
-	static final Set<Integer> COURSE_OBSTACLE_IDS = ImmutableSet.of(
+	static final Set<Integer> COURSE_OBSTACLE_IDS = Set.of(
 		// Gnome
 		OBSTACLE_NET_23134, TREE_BRANCH_23559, TREE_BRANCH_23560, OBSTACLE_NET_23135, OBSTACLE_PIPE_23138,
 		OBSTACLE_PIPE_23139, LOG_BALANCE_23145, BALANCING_ROPE_23557,
@@ -49,8 +47,8 @@ class Obstacles
 		ROUGH_WALL_11633, TIGHTROPE_14398, CABLE, ZIP_LINE_14403, TROPICAL_TREE_14404, ROOF_TOP_BEAMS,
 		TIGHTROPE_14409, GAP_14399,
 		// Pyramid
-		STAIRS_10857, LOW_WALL_10865, LEDGE_10860, PLANK_10868, GAP_10882, LEDGE_10886, STAIRS_10857, GAP_10884,
-		GAP_10859, GAP_10861, LOW_WALL_10865, GAP_10859, LEDGE_10888, PLANK_10868, CLIMBING_ROCKS_10851, DOORWAY_10855,
+		LEDGE_10860, GAP_10882, LEDGE_10886, STAIRS_10857, GAP_10884, GAP_10861,
+		LOW_WALL_10865, GAP_10859, LEDGE_10888, PLANK_10868, CLIMBING_ROCKS_10851, DOORWAY_10855,
 		// Varrock
 		ROUGH_WALL_14412, CLOTHES_LINE, GAP_14414, WALL_14832, GAP_14833, GAP_14834, GAP_14835, LEDGE_14836, EDGE,
 		// Penguin
@@ -101,12 +99,12 @@ class Obstacles
 
 	static final Multimap<Integer, AgilityShortcut> SHORTCUT_OBSTACLE_IDS;
 
-	static final Set<Integer> TRAP_OBSTACLE_IDS = ImmutableSet.of(
+	static final Set<Integer> TRAP_OBSTACLE_IDS = Set.of(
 		// Agility pyramid
 		NULL_3550, NULL_10872, NULL_10873
 	);
 
-	static final List<Integer> TRAP_OBSTACLE_REGIONS = ImmutableList.of(12105, 13356);
+	static final List<Integer> TRAP_OBSTACLE_REGIONS = List.of(12105, 13356);
 
 	static
 	{

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, Tim Lehner <Timothy.Lehner.2011@live.rhul.ac.uk>
+ * Copyright (c) 2020, Dutta64 <https://github.com/dutta64>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,73 +22,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.raidsthieving;
+package net.runelite.client.plugins.stealingartefacts;
 
-import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigTitleSection;
-import net.runelite.client.config.Title;
 
-@ConfigGroup("raidsthievingplugin")
-public interface RaidsThievingConfig extends Config
+@ConfigGroup("stealingartefacts")
+public interface StealingArtefactsConfig extends Config
 {
-	@ConfigTitleSection(
-		keyName = "colorsTitle",
-		position = 1,
-		name = "Colors",
-		description = ""
+	@ConfigItem(
+		keyName = "houseInfoBox",
+		name = "Display InfoBox",
+		description = "Shows the artefact house cardinal location.<br>See RuneLite plugin for generic InfoBox " +
+			"settings.",
+		position = 0
 	)
-	default Title colorsTitle()
+	default boolean displayHouseInfoBox()
 	{
-		return new Title();
+		return true;
 	}
 
 	@ConfigItem(
-		position = 2,
-		keyName = "hexColorPotentialBat",
-		name = "Potential Bat",
-		description = "Color of marker for chests which could have bat",
-		titleSection = "colorsTitle"
+		keyName = "displayHintArrow",
+		name = "Display Hint Arrow",
+		description = "Hint arrow pointing to the artefact house.",
+		position = 1
 	)
-	default Color getPotentialBatColor()
+	default boolean displayHintArrow()
 	{
-		return Color.YELLOW;
-	}
-
-	@ConfigItem(
-		position = 3,
-		keyName = "hexColorPoison",
-		name = "Poison trap",
-		description = "Color of chest with poison",
-		titleSection = "colorsTitle"
-	)
-	default Color getPoisonTrapColor()
-	{
-		return Color.GREEN;
-	}
-
-	@ConfigTitleSection(
-		keyName = "notificationTitle",
-		position = 4,
-		name = "Notification",
-		description = ""
-	)
-	default Title notificationTitle()
-	{
-		return new Title();
-	}
-
-	@ConfigItem(
-		position = 5,
-		keyName = "batNotify",
-		name = "Notify when found",
-		description = "Send notification if you see bats being found.",
-		titleSection = "notificationTitle"
-	)
-	default boolean batFoundNotify()
-	{
-		return false;
+		return true;
 	}
 }

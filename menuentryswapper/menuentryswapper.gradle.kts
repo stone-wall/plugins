@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,25 +23,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.15"
+version = "0.0.19"
 
 project.extra["PluginName"] = "Menu Entry Swapper"
 project.extra["PluginDescription"] = "Change the default option that is displayed when hovering over objects"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-    compileOnly(Libraries.rxjava)
-}
 
 tasks {
     jar {

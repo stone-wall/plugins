@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Hydrox6 <ikada@protonmail.ch>
+ * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,22 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.inventoryviewer;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+version = "0.0.2"
 
-@Getter(AccessLevel.PACKAGE)
-@RequiredArgsConstructor
-public enum InventoryViewerMode
-{
-	FULL("Full"),
-	GROUPED("Grouped");
+project.extra["PluginName"] = "Never Logout"
+project.extra["PluginDescription"] = "Remove 5 minute idle logout timer."
 
-	private final String name;
-
-	@Override
-	public String toString()
-	{
-		return name;
-	}
+tasks {
+    jar {
+        manifest {
+            attributes(mapOf(
+                    "Plugin-Version" to project.version,
+                    "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
+                    "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Description" to project.extra["PluginDescription"],
+                    "Plugin-License" to project.extra["PluginLicense"]
+            ))
+        }
+    }
 }

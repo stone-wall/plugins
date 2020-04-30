@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.cluescrolls.clues;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -117,7 +116,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 		item(ItemID.CRYSTAL_HARPOON)
 	);
 
-	private static final Set<SkillChallengeClue> CLUES = ImmutableSet.of(
+	private static final Set<SkillChallengeClue> CLUES = Set.of(
 		// Charlie Tasks
 		new SkillChallengeClue("Cook a Pike", "i need to cook charlie a pike.", "i need to take the cooked pike to charlie.", item(ItemID.PIKE), item(ItemID.RAW_PIKE)),
 		new SkillChallengeClue("Cook a Trout", "i need to cook charlie a trout.", "i need to take the cooked trout to charlie.", item(ItemID.TROUT), item(ItemID.RAW_TROUT)),
@@ -133,7 +132,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 			xOfItem(ItemID.COSMIC_RUNE, 1),
 			any("Water Rune x15", xOfItem(ItemID.WATER_RUNE, 15), xOfItem(ItemID.MIST_RUNE, 15), xOfItem(ItemID.MUD_RUNE, 15), xOfItem(ItemID.STEAM_RUNE, 15), item(ItemID.STAFF_OF_WATER), item(ItemID.WATER_BATTLESTAFF), item(ItemID.MYSTIC_WATER_STAFF), item(ItemID.MUD_BATTLESTAFF), item(ItemID.MYSTIC_MUD_STAFF), item(ItemID.MIST_BATTLESTAFF), item(ItemID.MYSTIC_MIST_STAFF), item(ItemID.STEAM_BATTLESTAFF), item(ItemID.MYSTIC_STEAM_STAFF), item(ItemID.STEAM_BATTLESTAFF_12795), item(ItemID.MYSTIC_STEAM_STAFF_12796), item(ItemID.KODAI_WAND)),
 			any("Earth Rune x15", xOfItem(ItemID.EARTH_RUNE, 15), xOfItem(ItemID.DUST_RUNE, 15), xOfItem(ItemID.MUD_RUNE, 15), xOfItem(ItemID.LAVA_RUNE, 15), item(ItemID.STAFF_OF_EARTH), item(ItemID.EARTH_BATTLESTAFF), item(ItemID.MYSTIC_EARTH_STAFF), item(ItemID.MUD_BATTLESTAFF), item(ItemID.MYSTIC_MUD_STAFF), item(ItemID.DUST_BATTLESTAFF), item(ItemID.MYSTIC_DUST_STAFF), item(ItemID.LAVA_BATTLESTAFF), item(ItemID.MYSTIC_LAVA_STAFF), item(ItemID.LAVA_BATTLESTAFF_21198), item(ItemID.MYSTIC_LAVA_STAFF_21200)),
-			any("Unenchanted Dragonstone Jewellery", item(ItemID.DRAGONSTONE_RING), item(ItemID.DRAGON_NECKLACE), item(ItemID.DRAGON_BRACELET), item(ItemID.DRAGONSTONE_AMULET))),
+			any("Unenchanted Dragonstone Jewellery", item(ItemID.DRAGONSTONE_RING), item(ItemID.DRAGON_NECKLACE), item(ItemID.DRAGONSTONE_BRACELET), item(ItemID.DRAGONSTONE_AMULET))),
 		new SkillChallengeClue("Craft a nature rune.", item(ItemID.PURE_ESSENCE)),
 		new SkillChallengeClue("Catch a mottled eel with aerial fishing in Lake Molch.", any("Fish chunks or King worms", item(ItemID.FISH_CHUNKS), item(ItemID.KING_WORM)), emptySlot("No Gloves", EquipmentInventorySlot.GLOVES), emptySlot("No Weapon", EquipmentInventorySlot.WEAPON), emptySlot("No Shield", EquipmentInventorySlot.SHIELD)),
 		new SkillChallengeClue("Score a goal in skullball.", true, any("Ring of Charos", item(ItemID.RING_OF_CHAROS), item(ItemID.RING_OF_CHAROSA))),
@@ -149,7 +148,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 		new SkillChallengeClue("Smith a mithril 2h sword.", item(ItemID.HAMMER), xOfItem(ItemID.MITHRIL_BAR, 3)),
 		new SkillChallengeClue("Catch a raw shark.", ANY_HARPOON),
 		new SkillChallengeClue("Cut a yew log.", ANY_AXE),
-		new SkillChallengeClue("Fix a magical lamp in Dorgesh-Kaan.", new String[] { "Broken lamp" }, new int[] { 10834, 10835 }, item(ItemID.LIGHT_ORB)),
+		new SkillChallengeClue("Fix a magical lamp in Dorgesh-Kaan.", new String[]{"Broken lamp"}, new int[]{10834, 10835}, item(ItemID.LIGHT_ORB)),
 		new SkillChallengeClue("Burn a yew log.", item(ItemID.YEW_LOGS), item(ItemID.TINDERBOX)),
 		new SkillChallengeClue("Cook a swordfish", "cook a swordfish", item(ItemID.RAW_SWORDFISH)),
 		new SkillChallengeClue("Craft multiple cosmic runes from a single essence.", item(ItemID.PURE_ESSENCE)),
@@ -225,7 +224,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 	}
 
 	// Non-cryptic Sherlock Tasks
-	private SkillChallengeClue(String challenge, String[] objectNames, int[] objectRegions, ItemRequirement ... itemRequirements)
+	private SkillChallengeClue(String challenge, String[] objectNames, int[] objectRegions, ItemRequirement... itemRequirements)
 	{
 		this(challenge, challenge.toLowerCase(), false, objectNames, objectRegions, itemRequirements);
 	}
@@ -249,7 +248,7 @@ public class SkillChallengeClue extends ClueScroll implements NpcClueScroll, Nam
 	}
 
 	// Sherlock Tasks
-	private SkillChallengeClue(String challenge, String rawChallenge, boolean requireEquip, String[] objectNames, int[] objectRegions, ItemRequirement ... itemRequirements)
+	private SkillChallengeClue(String challenge, String rawChallenge, boolean requireEquip, String[] objectNames, int[] objectRegions, ItemRequirement... itemRequirements)
 	{
 		this.type = ChallengeType.SHERLOCK;
 		this.challenge = challenge;

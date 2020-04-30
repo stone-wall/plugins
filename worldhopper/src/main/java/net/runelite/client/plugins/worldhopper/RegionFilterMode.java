@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Hydrox6 <ikada@protonmail.ch>
+ * Copyright (c) 2019, Liam Edwards <http://github.com/Spedwards>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,42 +22,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.inventoryviewer;
+package net.runelite.client.plugins.worldhopper;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import net.runelite.http.api.worlds.WorldRegion;
 
-@ConfigGroup(InventoryViewerPlugin.CONFIG_GROUP_KEY)
-public interface InventoryViewerConfig extends Config
+@NoArgsConstructor
+@AllArgsConstructor
+public enum RegionFilterMode
 {
-	@ConfigItem(
-		keyName = "viewerMode",
-		name = "Mode",
-		description = "The mode to display the inventory viewer with"
-	)
-	default InventoryViewerMode viewerMode()
-	{
-		return InventoryViewerMode.FULL;
-	}
+	NONE,
+	AUSTRALIA(WorldRegion.AUSTRALIA),
+	GERMANY(WorldRegion.GERMANY),
+	UNITED_KINGDOM(WorldRegion.UNITED_KINGDOM)
+		{
+			@Override
+			public String toString()
+			{
+				return "U.K.";
+			}
+		},
+	UNITED_STATES(WorldRegion.UNITED_STATES_OF_AMERICA)
+		{
+			@Override
+			public String toString()
+			{
+				return "USA";
+			}
+		};
 
-	@ConfigItem(
-		keyName = "showFreeSlots",
-		name = "Show Free Slots",
-		description = "Whether to show a label with the free slots in the inventory"
-	)
-	default boolean showFreeSlots()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		keyName = "hideWhenInvOpen",
-		name = "Hide when inventory is open",
-		description = "Hide the inventory viewer when the player's inventory is open"
-	)
-	default boolean hideWhenInvOpen()
-	{
-		return false;
-	}
+	@Getter
+	private WorldRegion region;
 }

@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,36 +23,18 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.5"
+version = "0.0.6"
 
 project.extra["PluginName"] = "Bank"
 project.extra["PluginDescription"] = "Modifications to the banking interface"
 
 dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
 
     compileOnly(project(":banktags"))
+    compileOnly(project(":cluescroll"))
 
-    compileOnly(Libraries.apacheCommonsText)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.hamcrest)
-
-    testImplementation("com.openosrs:runelite-api:$rlVersion")
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
-    testImplementation(Libraries.pf4j)
-    testImplementation(Libraries.guiceTestlib)
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.mockitoCore)
-    testImplementation(Libraries.mockitoInline)
+    testImplementation(project(":banktags"))
+    testImplementation(project(":cluescroll"))
 }
 
 tasks {
@@ -64,6 +44,11 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(
+                                    nameToId("banktags"),
+                                    nameToId("cluescroll")
+                            ).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

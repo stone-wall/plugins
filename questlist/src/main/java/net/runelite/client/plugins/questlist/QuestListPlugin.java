@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.questlist;
 
-import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -72,7 +71,7 @@ import org.pf4j.Extension;
 public class QuestListPlugin extends Plugin
 {
 	private static final int ENTRY_PADDING = 8;
-	private static final List<String> QUEST_HEADERS = ImmutableList.of("Free Quests", "Members' Quests", "Miniquests");
+	private static final List<String> QUEST_HEADERS = List.of("Free Quests", "Members' Quests", "Miniquests");
 
 	private static final String MENU_OPEN = "Open";
 	private static final String MENU_CLOSE = "Close";
@@ -102,12 +101,14 @@ public class QuestListPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		currentFilterState = QuestState.ALL;
 		clientThread.invoke(this::addQuestButtons);
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		currentFilterState = null;
 		Widget header = client.getWidget(WidgetInfo.QUESTLIST_BOX);
 		if (header != null)
 		{
@@ -235,6 +236,7 @@ public class QuestListPlugin extends Plugin
 		questSearchButton.setOnOpListener((JavaScriptCallback) e -> closeSearch());
 		searchInput = chatboxPanelManager.openTextInput("Search quest list")
 			.onChanged(s -> clientThread.invokeLater(() -> updateFilter(s)))
+			.onDone(s -> false)
 			.onClose(() ->
 			{
 				clientThread.invokeLater(() -> updateFilter(""));

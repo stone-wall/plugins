@@ -32,7 +32,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
@@ -50,9 +50,9 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.raids.solver.Room;
-import net.runelite.client.ui.overlay.Overlay;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.ComponentConstants;
@@ -69,7 +69,7 @@ import net.runelite.http.api.worlds.WorldRegion;
 import net.runelite.http.api.worlds.WorldResult;
 
 @Singleton
-public class RaidsOverlay extends Overlay
+public class RaidsOverlay extends OverlayPanel
 {
 
 	@Inject
@@ -82,7 +82,6 @@ public class RaidsOverlay extends Overlay
 	private static final int TITLE_COMPONENT_HEIGHT = 20;
 	private static final int LINE_COMPONENT_HEIGHT = 16;
 	static final String BROADCAST_ACTION = "Broadcast layout";
-	private final PanelComponent panelComponent = new PanelComponent();
 	private final ItemManager itemManager;
 	private final SpriteManager spriteManager;
 	private final PanelComponent panelImages = new PanelComponent();
@@ -143,7 +142,7 @@ public class RaidsOverlay extends Overlay
 				.color(Color.RED)
 				.build());
 
-			return panelComponent.render(graphics);
+			return super.render(graphics);
 		}
 
 		Color color = Color.WHITE;
@@ -233,14 +232,14 @@ public class RaidsOverlay extends Overlay
 			puzzles = crabs ? "cr" : iceDemon ? "ri" : thieving ? "tr" : "?r";
 		}
 
-		if ((config.hideVanguards() && vanguards) || (config.hideRopeless() && !tightrope) || (config.hideUnknownCombat() && unknownCombat))
+		if ((config.hideVanguards() && vanguards) || (config.hideRopeless() && !tightrope) || (config.hideUnknownCombat() && unknownCombat || (config.hideIceDemon() && iceDemon || config.hideThieving() && thieving)))
 		{
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Bad Raid!")
 				.color(Color.RED)
 				.build());
 
-			return panelComponent.render(graphics);
+			return super.render(graphics);
 		}
 
 		scouterActive = true;
@@ -318,12 +317,11 @@ public class RaidsOverlay extends Overlay
 		int bossCount = 0;
 		roomCount = 0;
 
+		Set<Integer> imageIds = new LinkedHashSet<>();
 		if (config.enableRotationWhitelist())
 		{
 			bossMatches = plugin.getRotationMatches();
 		}
-
-		Set<Integer> imageIds = new HashSet<>();
 		for (Room layoutRoom : plugin.getRaid().getLayout().getRooms())
 		{
 			int position = layoutRoom.getPosition();
@@ -449,7 +447,7 @@ public class RaidsOverlay extends Overlay
 			panelImages.setBackgroundColor(null);
 
 			panelImages.setOrientation(ComponentOrientation.HORIZONTAL);
-			panelImages.setWrapping(4);
+			panelImages.setWrap(true);
 
 
 			for (Integer e : idArray)
@@ -464,7 +462,7 @@ public class RaidsOverlay extends Overlay
 		}
 
 
-		Dimension panelDims = panelComponent.render(graphics);
+		Dimension panelDims = super.render(graphics);
 		width = (int) panelDims.getWidth();
 		height = (int) panelDims.getHeight();
 		return panelDims;

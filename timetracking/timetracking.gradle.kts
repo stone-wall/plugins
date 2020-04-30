@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,33 +23,10 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.3"
+version = "0.0.4"
 
 project.extra["PluginName"] = "Time Tracking"
 project.extra["PluginDescription"] = "Enable the Time Tracking panel, which contains timers, stopwatches, and farming and bird house trackers"
-
-dependencies {
-    annotationProcessor(Libraries.lombok)
-    annotationProcessor(Libraries.pf4j)
-
-    compileOnly("com.openosrs:runelite-api:$rlVersion")
-    compileOnly("com.openosrs:runelite-client:$rlVersion")
-
-    compileOnly(Libraries.guava)
-    compileOnly(Libraries.guice)
-    compileOnly(Libraries.gson)
-    compileOnly(Libraries.jopt)
-    compileOnly(Libraries.lombok)
-    compileOnly(Libraries.pf4j)
-
-    testImplementation("com.openosrs:runelite-api:$rlVersion")
-    testImplementation("com.openosrs:runelite-client:$rlVersion")
-
-    testImplementation(Libraries.junit)
-    testImplementation(Libraries.hamcrest)
-    testImplementation(Libraries.mockitoCore)
-    testImplementation(Libraries.mockitoInline)
-}
 
 tasks {
     jar {

@@ -24,7 +24,6 @@
  */
 package net.runelite.client.plugins.cluescrolls.clues;
 
-import com.google.common.collect.ImmutableSet;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Set;
@@ -52,7 +51,7 @@ public class AnagramClue extends ClueScroll implements TextClueScroll, NpcClueSc
 	private static final String ANAGRAM_TEXT = "This anagram reveals who to speak to next: ";
 	private static final String ANAGRAM_TEXT_BEGINNER = "The anagram reveals who to speak to next: ";
 
-	private static final Set<AnagramClue> CLUES = ImmutableSet.of(
+	private static final Set<AnagramClue> CLUES = Set.of(
 		new AnagramClue("A BAKER", "Baraek", new WorldPoint(3217, 3434, 0), "Varrock square", "How many stalls are there in Varrock Square?", "5"),
 		new AnagramClue("A BASIC ANTI POT", "Captain Tobias", new WorldPoint(3026, 3216, 0), "Port Sarim", "How many ships are there docked at Port Sarim currently?", "6"),
 		new AnagramClue("A ELF KNOWS", "Snowflake", new WorldPoint(2872, 3934, 0), "Weiss"),
@@ -107,7 +106,7 @@ public class AnagramClue extends ClueScroll implements TextClueScroll, NpcClueSc
 		new AnagramClue("I EAT ITS CHART HINTS DO U", "Shiratti the Custodian", new WorldPoint(3427, 2927, 0), "North of fountain, Nardah"),
 		new AnagramClue("I EVEN", "Nieve", new WorldPoint(2432, 3422, 0), "The slayer master in Gnome Stronghold", "How many farming patches are there in Gnome stronghold?", "2"),
 		new AnagramClue("I FAFFY RUN", "Fairy Nuff", new WorldPoint(3201, 3169, 0), "North of the bank in Zanaris"),
-		new AnagramClue("IM N ZEZIM", "Impling", new WorldPoint(2592, 4324, 0), "The Imp inside Puro-Puro"),
+		new AnagramClue("IM N ZEZIM", "Immenizz", new WorldPoint(2592, 4324, 0), "The Imp inside Puro-Puro"),
 		new AnagramClue("KAY SIR", "Sir Kay", new WorldPoint(2760, 3496, 0), "The courtyard in Camelot Castle", "How many fountains are there within the grounds of Camelot castle.", "6"),
 		new AnagramClue("LEAKEY", "Kaylee", new WorldPoint(2957, 3370, 0), "Rising Sun Inn in Falador", "How many chairs are there in the Rising Sun?", "18"),
 		new AnagramClue("LAND DOOMD", "Odd Old Man", new WorldPoint(3359, 3506, 0), "Limestone mine northeast of Varrock"),
