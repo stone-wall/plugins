@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, pacf531 <https://github.com/pacf531>
+ * Copyright (c) 2020, Anthony <https://github.com/while-loop>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,30 +22,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.gpu.config;
+package net.runelite.client.plugins.xptracker;
 
-import lombok.AccessLevel;
+import java.util.function.Function;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import net.runelite.client.util.QuantityFormatter;
 
-@Getter(AccessLevel.PUBLIC)
-@RequiredArgsConstructor
-public enum AnisotropicFilteringMode
+@Getter
+@AllArgsConstructor
+public enum XpPanelLabel
 {
-	DISABLED("Disabled", 0f),
-	BILINEAR("Bilinear", 0.5f),
-	TRILINEAR("Trilinear", 1f),
-	AF_2("x2", 2f),
-	AF_4("x4", 4f),
-	AF_8("x8", 8f),
-	AF_16("x16", 16f);
+	TIME_TO_LEVEL("TTL", XpSnapshotSingle::getTimeTillGoalShort),
 
-	private final String name;
-	private final float samples;
+	XP_GAINED("XP Gained", snap -> format(snap.getXpGainedInSession())),
+	XP_HOUR("XP/hr", snap -> format(snap.getXpPerHour())),
+	XP_LEFT("XP Left", snap -> format(snap.getXpRemainingToGoal())),
 
-	@Override
-	public String toString()
+	ACTIONS_LEFT("Actions", snap -> format(snap.getActionsRemainingToGoal())),
+	ACTIONS_HOUR("Actions/hr", snap -> format(snap.getActionsPerHour())),
+	ACTIONS_DONE("Actions Done", snap -> format(snap.getActionsInSession())),
+	;
+
+	private final String key;
+	private final Function<XpSnapshotSingle, String> valueFunc;
+
+	/**
+	 * Get the action key label based on if the Action type is an xp drop or kill
+	 *
+	 * @param snapshot
+	 * @return
+	 */
+	public String getActionKey(XpSnapshotSingle snapshot)
 	{
-		return name;
+		String actionKey = key;
+		if (snapshot.getActionType() == XpActionType.ACTOR_HEALTH)
+		{
+			return actionKey.replace("Action", "Kill");
+		}
+
+		return actionKey;
+	}
+
+	private static String format(int val)
+	{
+		return QuantityFormatter.quantityToRSDecimalStack(val, true);
 	}
 }
