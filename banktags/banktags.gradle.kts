@@ -1,3 +1,5 @@
+import ProjectVersions.rlVersion
+
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -23,15 +25,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "0.0.10"
+version = "0.0.7"
 
 project.extra["PluginName"] = "Bank Tags"
 project.extra["PluginDescription"] = "Enable tagging of bank items and searching of bank tags"
 
 dependencies {
+    annotationProcessor(Libraries.lombok)
+    annotationProcessor(Libraries.pf4j)
+
+    compileOnly("com.openosrs:runelite-api:$rlVersion")
+    compileOnly("com.openosrs:runelite-client:$rlVersion")
+
     compileOnly(project(":cluescroll"))
 
+    compileOnly(Libraries.apacheCommonsText)
+    compileOnly(Libraries.guice)
+    compileOnly(Libraries.lombok)
+    compileOnly(Libraries.pf4j)
+
+    testImplementation("com.openosrs:runelite-api:$rlVersion")
+    testImplementation("com.openosrs:runelite-client:$rlVersion")
+
     testImplementation(project(":cluescroll"))
+
+    testImplementation(Libraries.pf4j)
+    testImplementation(Libraries.guiceTestlib)
+    testImplementation(Libraries.junit)
+    testImplementation(Libraries.mockitoCore)
+    testImplementation(Libraries.mockitoInline)
 }
 
 tasks {

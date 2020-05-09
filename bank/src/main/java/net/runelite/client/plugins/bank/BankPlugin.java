@@ -27,7 +27,9 @@
 package net.runelite.client.plugins.bank;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multiset;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
@@ -47,7 +49,8 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemDefinition;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.ScriptID;
+import net.runelite.api.SpriteID;
+import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
@@ -55,8 +58,9 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.MenuShouldLeftClick;
 import net.runelite.api.events.ScriptCallbackEvent;
-import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.VarClientStrChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.vars.InputType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -82,7 +86,7 @@ import org.pf4j.Extension;
 )
 public class BankPlugin extends Plugin implements KeyListener
 {
-	private static final List<Varbits> TAB_VARBITS = List.of(
+	private static final List<Varbits> TAB_VARBITS = ImmutableList.of(
 		Varbits.BANK_TAB_ONE_COUNT,
 		Varbits.BANK_TAB_TWO_COUNT,
 		Varbits.BANK_TAB_THREE_COUNT,
@@ -94,7 +98,7 @@ public class BankPlugin extends Plugin implements KeyListener
 		Varbits.BANK_TAB_NINE_COUNT
 	);
 
-	private static final List<WidgetInfo> BANK_PINS = List.of(
+	private static final List<WidgetInfo> BANK_PINS = ImmutableList.of(
 		WidgetInfo.BANK_PIN_1,
 		WidgetInfo.BANK_PIN_2,
 		WidgetInfo.BANK_PIN_3,
@@ -163,8 +167,9 @@ public class BankPlugin extends Plugin implements KeyListener
 	{
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
-			keyManager.registerKeyListener(this);
+		keyManager.registerKeyListener(this);
 		}
+		searchString = "";
 	}
 
 	@Override
@@ -174,9 +179,8 @@ public class BankPlugin extends Plugin implements KeyListener
 		clientThread.invokeLater(() -> bankSearch.reset(false));
 		forceRightClickFlag = false;
 		itemQuantities = null;
-		searchString = null;
 	}
-
+	
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
@@ -289,20 +293,30 @@ public class BankPlugin extends Plugin implements KeyListener
 	}
 
 	@Subscribe
-	public void onScriptPostFired(ScriptPostFired event)
+	public void onVarClientStrChanged(VarClientStrChanged event)
 	{
-		if (event.getScriptId() != ScriptID.BANKMAIN_SEARCH_REFRESH)
+		String searchVar = client.getVar(VarClientStr.INPUT_TEXT);
+
+		if (!searchVar.equals(searchString))
 		{
-			return;
+			Widget searchButtonBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
+			if (searchButtonBackground != null && searchButtonBackground.hasListener())
+			{
+				searchButtonBackground.setOnTimerListener((Object[]) null);
+				searchButtonBackground.setHasListener(false);
+			}
+
+			clientThread.invokeLater(() -> bankSearch.layoutBank());
+			searchString = searchVar;
 		}
 
-		// vanilla only lays out the bank every 40 client ticks, so if the search input has changed,
-		// and the bank wasn't laid out this tick, lay it out early
-		final String inputText = client.getVar(VarClientStr.INPUT_TEXT);
-		if (searchString != inputText && client.getGameCycle() % 40 != 0)
+		if (client.getVar(VarClientInt.INPUT_TYPE) != InputType.SEARCH.getType() && Strings.isNullOrEmpty(client.getVar(VarClientStr.INPUT_TEXT)))
 		{
-			clientThread.invokeLater(bankSearch::layoutBank);
-			searchString = inputText;
+			Widget searchBackground = client.getWidget(WidgetInfo.BANK_SEARCH_BUTTON_BACKGROUND);
+			if (searchBackground != null)
+			{
+				searchBackground.setSpriteId(SpriteID.EQUIPMENT_SLOT_TILE);
+			}
 		}
 	}
 
