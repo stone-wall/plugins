@@ -653,6 +653,7 @@ public class ScreenshotPlugin extends Plugin
 		{
 			drawManager.requestNextFrameListener(imageCallback);
 		}
+		overlayRenderer.setShouldRender(true);
 	}
 
 	private void takeScreenshot(String fileName, String subDir, Image image)
